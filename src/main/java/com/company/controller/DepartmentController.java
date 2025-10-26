@@ -1,6 +1,7 @@
 package com.company.controller;
 
 import com.company.dto.DepartmentDto;
+import com.company.dto.SearchRequest;
 import com.company.service.DepartmentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -9,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 
 import jakarta.validation.Valid;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/departments")
@@ -66,5 +68,29 @@ public class DepartmentController {
     public ResponseEntity<Void> deleteDepartment(@PathVariable String departmentcode) {
         departmentService.delete(departmentcode);
         return ResponseEntity.noContent().build();
+    }
+    
+    @PostMapping("/search")
+    public ResponseEntity<List<DepartmentDto>> searchDepartments(@RequestBody SearchRequest searchRequest) {
+        List<DepartmentDto> departments = departmentService.searchDepartments(
+            searchRequest.getSearchTerm(), 
+            searchRequest.getFilters()
+        );
+        return ResponseEntity.ok(departments);
+    }
+    
+    @GetMapping("/search")
+    public ResponseEntity<List<DepartmentDto>> searchDepartmentsWithParams(
+            @RequestParam(required = false, name = "searchTerm") String searchTerm,
+            @RequestParam(required = false, name = "departmentname") String departmentname,
+            @RequestParam(required = false, name = "departmentcode") String departmentcode) {
+        
+        // Build filters map
+        Map<String, Object> filters = new java.util.HashMap<>();
+        if (departmentname != null) filters.put("departmentname", departmentname);
+        if (departmentcode != null) filters.put("departmentcode", departmentcode);
+        
+        List<DepartmentDto> departments = departmentService.searchDepartments(searchTerm, filters);
+        return ResponseEntity.ok(departments);
     }
 }

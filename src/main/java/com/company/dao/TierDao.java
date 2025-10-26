@@ -13,6 +13,7 @@ import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Repository
 public class TierDao {
@@ -68,5 +69,42 @@ public class TierDao {
     public void delete(Integer tiercode) {
         String sql = "DELETE FROM tier WHERE tiercode = ?";
         jdbcTemplate.update(sql, tiercode);
+    }
+    
+    public List<TierDto> searchTiers(String searchTerm, Map<String, Object> filters) {
+        StringBuilder sql = new StringBuilder("SELECT tiercode, tiername FROM tier WHERE 1=1");
+        Map<String, Object> params = new HashMap<>();
+        
+        // Add search term condition
+        if (searchTerm != null && !searchTerm.trim().isEmpty()) {
+            sql.append(" AND (tiername ILIKE :searchTerm OR CAST(tiercode AS TEXT) LIKE :searchTerm)");
+            params.put("searchTerm", "%" + searchTerm + "%");
+        }
+        
+        // Add filter conditions
+        if (filters != null && !filters.isEmpty()) {
+            for (Map.Entry<String, Object> filter : filters.entrySet()) {
+                String key = filter.getKey();
+                Object value = filter.getValue();
+                
+                switch (key) {
+                    case "tiername":
+                        sql.append(" AND tiername ILIKE :").append(key);
+                        params.put(key, "%" + value + "%");
+                        break;
+                    case "tiercode":
+                        sql.append(" AND tiercode = :").append(key);
+                        params.put(key, value);
+                        break;
+                    default:
+                        // Ignore unknown filter parameters
+                        break;
+                }
+            }
+        }
+        
+        sql.append(" ORDER BY tiercode");
+        
+        return namedParameterJdbcTemplate.query(sql.toString(), params, new TierRowMapper());
     }
 }

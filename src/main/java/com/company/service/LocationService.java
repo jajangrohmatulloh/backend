@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class LocationService {
@@ -48,5 +49,9 @@ public class LocationService {
 
     public void delete(String locationcode) {
         locationDao.delete(locationcode);
+    }
+    
+    public List<LocationDto> searchLocations(String searchTerm, Map<String, Object> filters) {
+        return locationDao.searchLocations(searchTerm, filters);
     }
 }

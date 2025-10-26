@@ -1,5 +1,6 @@
 package com.company.controller;
 
+import com.company.dto.SearchRequest;
 import com.company.dto.TierDto;
 import com.company.service.TierService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 
 import jakarta.validation.Valid;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/tiers")
@@ -66,5 +68,29 @@ public class TierController {
     public ResponseEntity<Void> deleteTier(@PathVariable Integer tiercode) {
         tierService.delete(tiercode);
         return ResponseEntity.noContent().build();
+    }
+    
+    @PostMapping("/search")
+    public ResponseEntity<List<TierDto>> searchTiers(@RequestBody SearchRequest searchRequest) {
+        List<TierDto> tiers = tierService.searchTiers(
+            searchRequest.getSearchTerm(), 
+            searchRequest.getFilters()
+        );
+        return ResponseEntity.ok(tiers);
+    }
+    
+    @GetMapping("/search")
+    public ResponseEntity<List<TierDto>> searchTiersWithParams(
+            @RequestParam(required = false, name = "searchTerm") String searchTerm,
+            @RequestParam(required = false, name = "tiername") String tiername,
+            @RequestParam(required = false, name = "tiercode") Integer tiercode) {
+        
+        // Build filters map
+        Map<String, Object> filters = new java.util.HashMap<>();
+        if (tiername != null) filters.put("tiername", tiername);
+        if (tiercode != null) filters.put("tiercode", tiercode);
+        
+        List<TierDto> tiers = tierService.searchTiers(searchTerm, filters);
+        return ResponseEntity.ok(tiers);
     }
 }

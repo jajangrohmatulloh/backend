@@ -18,6 +18,7 @@
 /Users/jajangrohmatulloh/Developer/OpsNow/drive-download-20251025T022213Z-1-001/backend/src/main/java/com/company/dto/DepartmentDto.java
 /Users/jajangrohmatulloh/Developer/OpsNow/drive-download-20251025T022213Z-1-001/backend/src/main/java/com/company/dto/EmployeeDto.java
 /Users/jajangrohmatulloh/Developer/OpsNow/drive-download-20251025T022213Z-1-001/backend/src/main/java/com/company/dto/LocationDto.java
+/Users/jajangrohmatulloh/Developer/OpsNow/drive-download-20251025T022213Z-1-001/backend/src/main/java/com/company/dto/SearchRequest.java
 /Users/jajangrohmatulloh/Developer/OpsNow/drive-download-20251025T022213Z-1-001/backend/src/main/java/com/company/dto/TierDto.java
 /Users/jajangrohmatulloh/Developer/OpsNow/drive-download-20251025T022213Z-1-001/backend/src/main/java/com/company/dto/queries/CumulativeSalaryDto.java
 /Users/jajangrohmatulloh/Developer/OpsNow/drive-download-20251025T022213Z-1-001/backend/src/main/java/com/company/dto/queries/DepartmentAnalysisDto.java

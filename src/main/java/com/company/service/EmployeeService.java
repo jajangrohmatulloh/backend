@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class EmployeeService {
@@ -42,5 +43,9 @@ public class EmployeeService {
 
     public void delete(Integer empno) {
         employeeDao.delete(empno);
+    }
+    
+    public List<EmployeeDto> searchEmployees(String searchTerm, Map<String, Object> filters) {
+        return employeeDao.searchEmployees(searchTerm, filters);
     }
 }

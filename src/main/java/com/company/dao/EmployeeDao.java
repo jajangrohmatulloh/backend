@@ -14,6 +14,7 @@ import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Repository
 public class EmployeeDao {
@@ -90,5 +91,74 @@ public class EmployeeDao {
     public void delete(Integer empno) {
         String sql = "DELETE FROM employee WHERE empno = ?";
         jdbcTemplate.update(sql, empno);
+    }
+    
+    public List<EmployeeDto> searchEmployees(String searchTerm, Map<String, Object> filters) {
+        StringBuilder sql = new StringBuilder("SELECT empno, empname, tiercode, locationcode, departmentcode, supervisorcode, salary, entrydate FROM employee WHERE 1=1");
+        Map<String, Object> params = new HashMap<>();
+        
+        // Add search term condition (search across multiple fields)
+        if (searchTerm != null && !searchTerm.trim().isEmpty()) {
+            sql.append(" AND (empname ILIKE :searchTerm OR CAST(empno AS TEXT) LIKE :searchTerm OR CAST(tiercode AS TEXT) LIKE :searchTerm OR locationcode ILIKE :searchTerm OR departmentcode ILIKE :searchTerm OR CAST(supervisorcode AS TEXT) LIKE :searchTerm OR CAST(salary AS TEXT) LIKE :searchTerm OR CAST(entrydate AS TEXT) LIKE :searchTerm)");
+            params.put("searchTerm", "%" + searchTerm + "%");
+        }
+        
+        // Add filter conditions
+        if (filters != null && !filters.isEmpty()) {
+            for (Map.Entry<String, Object> filter : filters.entrySet()) {
+                String key = filter.getKey();
+                Object value = filter.getValue();
+                
+                switch (key) {
+                    case "empname":
+                        sql.append(" AND empname ILIKE :").append(key);
+                        params.put(key, "%" + value + "%");
+                        break;
+                    case "empno":
+                        sql.append(" AND empno = :").append(key);
+                        params.put(key, value);
+                        break;
+                    case "tiercode":
+                        sql.append(" AND tiercode = :").append(key);
+                        params.put(key, value);
+                        break;
+                    case "locationcode":
+                        sql.append(" AND locationcode = :").append(key);
+                        params.put(key, value);
+                        break;
+                    case "departmentcode":
+                        sql.append(" AND departmentcode = :").append(key);
+                        params.put(key, value);
+                        break;
+                    case "supervisorcode":
+                        sql.append(" AND supervisorcode = :").append(key);
+                        params.put(key, value);
+                        break;
+                    case "minSalary":
+                        sql.append(" AND salary >= :").append(key);
+                        params.put(key, value);
+                        break;
+                    case "maxSalary":
+                        sql.append(" AND salary <= :").append(key);
+                        params.put(key, value);
+                        break;
+                    case "minEntryDate":
+                        sql.append(" AND entrydate >= :").append(key);
+                        params.put(key, value);
+                        break;
+                    case "maxEntryDate":
+                        sql.append(" AND entrydate <= :").append(key);
+                        params.put(key, value);
+                        break;
+                    default:
+                        // Ignore unknown filter parameters
+                        break;
+                }
+            }
+        }
+        
+        sql.append(" ORDER BY empno");
+        
+        return namedParameterJdbcTemplate.query(sql.toString(), params, new EmployeeRowMapper());
     }
 }

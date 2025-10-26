@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class TierService {
@@ -42,5 +43,9 @@ public class TierService {
 
     public void delete(Integer tiercode) {
         tierDao.delete(tiercode);
+    }
+    
+    public List<TierDto> searchTiers(String searchTerm, Map<String, Object> filters) {
+        return tierDao.searchTiers(searchTerm, filters);
     }
 }

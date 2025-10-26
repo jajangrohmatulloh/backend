@@ -3,6 +3,7 @@ com/company/CrudApiApplication.class
 com/company/config/WebConfig.class
 com/company/dao/TierDao$TierRowMapper.class
 com/company/controller/DepartmentController.class
+com/company/dto/SearchRequest.class
 com/company/dao/queries/DepartmentAnalysisDao$DepartmentAnalysisRowMapper.class
 com/company/controller/ApiCallHistoryController.class
 com/company/service/TierService.class

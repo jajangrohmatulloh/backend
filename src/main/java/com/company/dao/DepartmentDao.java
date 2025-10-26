@@ -13,6 +13,7 @@ import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Repository
 public class DepartmentDao {
@@ -68,5 +69,42 @@ public class DepartmentDao {
     public void delete(String departmentcode) {
         String sql = "DELETE FROM department WHERE departmentcode = ?";
         jdbcTemplate.update(sql, departmentcode);
+    }
+    
+    public List<DepartmentDto> searchDepartments(String searchTerm, Map<String, Object> filters) {
+        StringBuilder sql = new StringBuilder("SELECT departmentcode, departmentname FROM department WHERE 1=1");
+        Map<String, Object> params = new HashMap<>();
+        
+        // Add search term condition
+        if (searchTerm != null && !searchTerm.trim().isEmpty()) {
+            sql.append(" AND (departmentname ILIKE :searchTerm OR departmentcode ILIKE :searchTerm)");
+            params.put("searchTerm", "%" + searchTerm + "%");
+        }
+        
+        // Add filter conditions
+        if (filters != null && !filters.isEmpty()) {
+            for (Map.Entry<String, Object> filter : filters.entrySet()) {
+                String key = filter.getKey();
+                Object value = filter.getValue();
+                
+                switch (key) {
+                    case "departmentname":
+                        sql.append(" AND departmentname ILIKE :").append(key);
+                        params.put(key, "%" + value + "%");
+                        break;
+                    case "departmentcode":
+                        sql.append(" AND departmentcode = :").append(key);
+                        params.put(key, value);
+                        break;
+                    default:
+                        // Ignore unknown filter parameters
+                        break;
+                }
+            }
+        }
+        
+        sql.append(" ORDER BY departmentcode");
+        
+        return namedParameterJdbcTemplate.query(sql.toString(), params, new DepartmentRowMapper());
     }
 }
