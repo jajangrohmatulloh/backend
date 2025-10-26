@@ -3,12 +3,16 @@ package com.company.controller;
 import com.company.dto.SearchRequest;
 import com.company.dto.TierDto;
 import com.company.service.TierService;
+import com.company.util.CsvExporter;
+import com.company.util.ExcelExporter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
@@ -92,5 +96,35 @@ public class TierController {
         
         List<TierDto> tiers = tierService.searchTiers(searchTerm, filters);
         return ResponseEntity.ok(tiers);
+    }
+    
+    @GetMapping("/export/excel")
+    public void exportTiersToExcel(HttpServletResponse response,
+            @RequestParam(required = false) String searchTerm,
+            @RequestParam(required = false, name = "tiername") String tiername,
+            @RequestParam(required = false, name = "tiercode") Integer tiercode) throws IOException {
+        
+        // Build filters map
+        Map<String, Object> filters = new java.util.HashMap<>();
+        if (tiername != null) filters.put("tiername", tiername);
+        if (tiercode != null) filters.put("tiercode", tiercode);
+        
+        List<TierDto> tiers = tierService.searchTiers(searchTerm, filters);
+        ExcelExporter.exportTiersToExcel(tiers, response);
+    }
+    
+    @GetMapping("/export/csv")
+    public void exportTiersToCsv(HttpServletResponse response,
+            @RequestParam(required = false) String searchTerm,
+            @RequestParam(required = false, name = "tiername") String tiername,
+            @RequestParam(required = false, name = "tiercode") Integer tiercode) throws IOException {
+        
+        // Build filters map
+        Map<String, Object> filters = new java.util.HashMap<>();
+        if (tiername != null) filters.put("tiername", tiername);
+        if (tiercode != null) filters.put("tiercode", tiercode);
+        
+        List<TierDto> tiers = tierService.searchTiers(searchTerm, filters);
+        CsvExporter.exportTiersToCsv(tiers, response);
     }
 }

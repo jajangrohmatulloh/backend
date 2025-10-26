@@ -3,12 +3,16 @@ package com.company.controller;
 import com.company.dto.DepartmentDto;
 import com.company.dto.SearchRequest;
 import com.company.service.DepartmentService;
+import com.company.util.CsvExporter;
+import com.company.util.ExcelExporter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
@@ -92,5 +96,35 @@ public class DepartmentController {
         
         List<DepartmentDto> departments = departmentService.searchDepartments(searchTerm, filters);
         return ResponseEntity.ok(departments);
+    }
+    
+    @GetMapping("/export/excel")
+    public void exportDepartmentsToExcel(HttpServletResponse response,
+            @RequestParam(required = false) String searchTerm,
+            @RequestParam(required = false, name = "departmentname") String departmentname,
+            @RequestParam(required = false, name = "departmentcode") String departmentcode) throws IOException {
+        
+        // Build filters map
+        Map<String, Object> filters = new java.util.HashMap<>();
+        if (departmentname != null) filters.put("departmentname", departmentname);
+        if (departmentcode != null) filters.put("departmentcode", departmentcode);
+        
+        List<DepartmentDto> departments = departmentService.searchDepartments(searchTerm, filters);
+        ExcelExporter.exportDepartmentsToExcel(departments, response);
+    }
+    
+    @GetMapping("/export/csv")
+    public void exportDepartmentsToCsv(HttpServletResponse response,
+            @RequestParam(required = false) String searchTerm,
+            @RequestParam(required = false, name = "departmentname") String departmentname,
+            @RequestParam(required = false, name = "departmentcode") String departmentcode) throws IOException {
+        
+        // Build filters map
+        Map<String, Object> filters = new java.util.HashMap<>();
+        if (departmentname != null) filters.put("departmentname", departmentname);
+        if (departmentcode != null) filters.put("departmentcode", departmentcode);
+        
+        List<DepartmentDto> departments = departmentService.searchDepartments(searchTerm, filters);
+        CsvExporter.exportDepartmentsToCsv(departments, response);
     }
 }

@@ -4,6 +4,7 @@ com/company/config/WebConfig.class
 com/company/dao/TierDao$TierRowMapper.class
 com/company/controller/DepartmentController.class
 com/company/dto/SearchRequest.class
+com/company/util/ExcelExporter.class
 com/company/dao/queries/DepartmentAnalysisDao$DepartmentAnalysisRowMapper.class
 com/company/controller/ApiCallHistoryController.class
 com/company/service/TierService.class
@@ -19,6 +20,7 @@ com/company/controller/queries/ComplexQueryController.class
 com/company/dao/LocationDao.class
 com/company/dao/ApiCallHistoryDao$ApiCallHistoryRowMapper.class
 com/company/service/queries/CumulativeSalaryService.class
+com/company/util/CsvExporter.class
 com/company/service/queries/DepartmentAnalysisService.class
 com/company/dao/queries/SalaryRankingDao$SalaryRankingRowMapper.class
 com/company/controller/EmployeeController.class
